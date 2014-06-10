@@ -1,6 +1,3 @@
-// Copyright (c) 2014 Yandex LLC. All rights reserved.
-// Author: Alexey Verein <tpom6oh@yandex-team.ru>
-
 package com.tpom6oh.employees.model;
 
 import java.util.Date;
