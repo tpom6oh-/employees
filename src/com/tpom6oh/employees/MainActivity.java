@@ -1,5 +1,6 @@
 package com.tpom6oh.employees;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -16,6 +17,8 @@ public class MainActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        Intent downloadData = new Intent(this, EmployeesDataLoaderService.class);
+        startService(downloadData);
     }
 
     @Override
