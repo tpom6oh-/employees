@@ -24,6 +24,7 @@ proguard/
  
 # Intellij project files
 *.iws
+.idea/
 .idea/workspace.xml
 .idea/tasks.xml
  
@@ -32,3 +33,5 @@ proguard/
  
 # OS
 .DS_Store
+
+

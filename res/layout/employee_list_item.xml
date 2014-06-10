@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
+    <TextView
+            android:id="@+id/employee_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="test"
+            />
+
+    <TextView
+            android:id="@+id/employee_division"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/employee_name"
+            android:text="test"
+            />
+
+    <TextView
+            android:id="@+id/employee_team"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/employee_name"
+            android:layout_toRightOf="@id/employee_division"
+            android:text="test"
+            />
+
+    <TextView
+            android:id="@+id/employee_salary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/employee_division"
+            android:text="test"
+            />
+
+    <TextView
+            android:id="@+id/employee_employment_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/employee_salary"
+            android:text="test"
+            />
+
+    <ImageView
+            android:id="@+id/employee_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_launcher"
+            />
+
+</RelativeLayout>
