@@ -32,6 +32,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
     public static final String ETAG_VALUE_LABEL = "ETag value";
     private static final String TAG = "EmployeesDataLoaderService.class";
     private String currentETag;
+    private boolean parsingFromWeb;
 
     private ArrayList<EmployeeInfo> employeesBuffer = new ArrayList<EmployeeInfo>(500);
 
@@ -44,13 +45,16 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         Cursor cursor = getContentResolver().query(EmployeeColumns.CONTENT_URI, null, null, null,
                                            null);
         InputStream in = null;
-        if (cursor != null && !cursor.moveToFirst()) {
+        if (cursor == null || !cursor.moveToFirst()) {
             in = getDefaultJsonStream(this);
-        }
-        if (eTagChanged()) {
+            parsingFromWeb = false;
+        } else if (eTagChanged()) {
             in = getWebJsonStream();
+            parsingFromWeb = true;
         }
-        parseInputStream(in);
+        if (in != null) {
+            parseInputStream(in);
+        }
     }
 
     public static InputStream getWebJsonStream() {
@@ -121,7 +125,11 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
 
     @Override
     public void onParseDataEnd() {
-        saveNewETagToPreferences(currentETag);
+        if (parsingFromWeb) {
+            saveNewETagToPreferences(currentETag);
+        } else {
+            startService(new Intent(this, EmployeesDataLoaderService.class));
+        }
     }
 
     @Override
