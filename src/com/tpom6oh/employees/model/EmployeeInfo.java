@@ -11,10 +11,11 @@ public class EmployeeInfo {
     private String companyName;
     private long countryId;
     private String enterpriseName;
+    private String imageUri;
 
     public EmployeeInfo(String employeeName, String divisionName, String teamName,
                         int monthlySalary, Date employmentDate, String companyName,
-                        long countryId, String enterpriseName) {
+                        long countryId, String enterpriseName, String imageUri) {
 
         this.employeeName = employeeName;
         this.divisionName = divisionName;
@@ -24,6 +25,7 @@ public class EmployeeInfo {
         this.companyName = companyName;
         this.countryId = countryId;
         this.enterpriseName = enterpriseName;
+        this.imageUri = imageUri;
     }
 
     public Date getEmploymentDate() {
@@ -88,5 +90,14 @@ public class EmployeeInfo {
 
     public void setEnterpriseName(String enterpriseName) {
         this.enterpriseName = enterpriseName;
+    }
+
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
     }
 }

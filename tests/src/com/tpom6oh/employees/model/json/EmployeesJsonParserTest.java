@@ -24,7 +24,7 @@ public class EmployeesJsonParserTest extends AndroidTestCase {
             parser.parseEnterpriseCountryJson(in);
 
             Mockito.verify(parseListener).onParseDataStart();
-            Mockito.verify(parseListener).onAllCountriesDataParsed();
+            Mockito.verify(parseListener).onParseDataEnd();
             Mockito.verify(parseListener).onAllEmployeesDataParsed();
             Mockito.verify(parseListener, Mockito.times(15)).
                            onEmployeeInfoReceive(Matchers.<EmployeeInfo>any());

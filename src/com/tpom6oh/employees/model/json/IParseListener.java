@@ -7,7 +7,7 @@ public interface IParseListener {
 
     void onParseDataStart();
 
-    void onAllCountriesDataParsed();
+    void onParseDataEnd();
 
     void onEmployeeInfoReceive(EmployeeInfo employeeInfo);
 

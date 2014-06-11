@@ -101,7 +101,7 @@ public class EmployeesJsonParser {
         reader.endArray();
 
         if (parseListener !=null) {
-            parseListener.onAllCountriesDataParsed();
+            parseListener.onParseDataEnd();
         }
     }
 
@@ -161,7 +161,8 @@ public class EmployeesJsonParser {
                                                          employmentDate,
                                                          currentCompanyInfo.companyName,
                                                          currentCompanyInfo.countryId,
-                                                         currentEnterpriseInfo.enterpriseName);
+                                                         currentEnterpriseInfo.enterpriseName,
+                                                         employee.getProfileImage());
             if (parseListener != null) {
                 parseListener.onEmployeeInfoReceive(employeeInfo);
             }

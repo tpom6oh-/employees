@@ -1,6 +1,7 @@
 package com.tpom6oh.employees;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.util.Log;
 
 import com.tpom6oh.employees.model.EmployeeInfo;
 import com.tpom6oh.employees.model.employee.EmployeeColumns;
+import com.tpom6oh.employees.model.employee.EmployeeContentValues;
 import com.tpom6oh.employees.model.json.CountryInfo;
 import com.tpom6oh.employees.model.json.EmployeesJsonParser;
 import com.tpom6oh.employees.model.json.IParseListener;
@@ -19,6 +21,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class EmployeesDataLoaderService extends IntentService implements IParseListener {
 
@@ -27,6 +32,8 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
     public static final String ETAG_VALUE_LABEL = "ETag value";
     private static final String TAG = "EmployeesDataLoaderService.class";
     private String currentETag;
+
+    private ArrayList<EmployeeInfo> employeesBuffer = new ArrayList<EmployeeInfo>(500);
 
     public EmployeesDataLoaderService() {
         super(TAG);
@@ -104,7 +111,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
 
     @Override
     public void onAllEmployeesDataParsed() {
-
+        loadEmployeesDataToDb();
     }
 
     @Override
@@ -113,17 +120,53 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
     }
 
     @Override
-    public void onAllCountriesDataParsed() {
+    public void onParseDataEnd() {
         saveNewETagToPreferences(currentETag);
     }
 
     @Override
     public void onEmployeeInfoReceive(EmployeeInfo employeeInfo) {
+        employeesBuffer.add(employeeInfo);
+        if (employeesBuffer.size() > 499) {
+            loadEmployeesDataToDb();
+        }
+    }
 
+    private void loadEmployeesDataToDb() {
+        ContentValues[] contentValues = new ContentValues[employeesBuffer.size()];
+        for (int i = 0; i < employeesBuffer.size(); i++) {
+            EmployeeInfo employeeInfo = employeesBuffer.get(i);
+            int employmentYear = parseYear(employeeInfo.getEmploymentDate());
+            EmployeeContentValues employeeContentValues = new EmployeeContentValues();
+            employeeContentValues.putName(employeeInfo.getEmployeeName())
+                    .putCompany(employeeInfo.getCompanyName())
+                    .putCountryId(employeeInfo.getCountryId())
+                    .putCountryNameNull()
+                    .putDivision(employeeInfo.getDivisionName())
+                    .putEmployementDate(employeeInfo.getEmploymentDate())
+                    .putEmployementYear(employmentYear)
+                    .putSalary(employeeInfo.getMonthlySalary())
+                    .putEnterprise(employeeInfo.getEnterpriseName())
+                    .putImageUrl(employeeInfo.getImageUri());
+            contentValues[i] = employeeContentValues.values();
+        }
+        getContentResolver().bulkInsert(EmployeeColumns.CONTENT_URI, contentValues);
+        employeesBuffer.clear();
     }
 
     @Override
     public void onCountryInfoReceive(CountryInfo country) {
+        ContentValues contentValues = new EmployeeContentValues().
+            putCountryName(country.getCountryName()).values();
+        String where = "country_id = ?";
+        String[] args = {String.valueOf(country.getCountryId())};
 
+        getContentResolver().update(EmployeeColumns.CONTENT_URI, contentValues, where, args);
+    }
+
+    private int parseYear(Date employmentDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(employmentDate);
+        return calendar.get(Calendar.YEAR);
     }
 }
