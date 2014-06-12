@@ -195,26 +195,26 @@ public class EmployeesJsonParser {
         return employmentDate;
     }
 
-    private static class EnterpriseInfo {
+    private class EnterpriseInfo {
         private long enterpriseId;
         private String enterpriseName;
         private long enterpriseResponsibleId;
     }
 
-    private static class CompanyInfo {
+    private class CompanyInfo {
         private long companyId;
         private long countryId;
         private String companyName;
         private long companyResponsibleId;
     }
 
-    private static class DivisionInfo {
+    private class DivisionInfo {
         private long divisionId;
         private String divisionName;
         private long divisionResponsibleId;
     }
 
-    private static class TeamInfo {
+    private class TeamInfo {
         private long teamId;
         private String teamName;
         private long teamResponsibleId;

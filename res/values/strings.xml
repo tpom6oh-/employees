@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">employees</string>
+    <string name="search_label"><![CDATA[Search & filter]]></string>
+    <string name="min_salary_text">Min salary:</string>
+    <string name="max_salary_text">Max salary:</string>
+    <string name="division_label">Division</string>
+    <string name="employment_year_label">Employment year</string>
+    <string name="country_name_hint">Company name</string>
+    <string name="employee_name_hint">Employee Name</string>
+    <string name="cancel_button_label">Cancel</string>
+    <string name="search_button_label">Search</string>
+    <string name="reset_button_label">Reset</string>
+    <string name="salary_error">Minimum salary should be less than maximum salary</string>
 </resources>
