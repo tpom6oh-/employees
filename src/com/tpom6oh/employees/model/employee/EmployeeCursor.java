@@ -52,7 +52,7 @@ public class EmployeeCursor extends AbstractCursor {
      * Get the {@code employement_year} value.
      */
     public int getEmployementYear() {
-        return getIntegerOrNull(EmployeeColumns.EMPLOYEMENT_YEAR);
+        return getIntegerOrNull(EmployeeColumns.EMPLOYMENT_YEAR);
     }
 
     /**
@@ -60,7 +60,7 @@ public class EmployeeCursor extends AbstractCursor {
      * Cannot be {@code null}.
      */
     public Date getEmployementDate() {
-        return getDate(EmployeeColumns.EMPLOYEMENT_DATE);
+        return getDate(EmployeeColumns.EMPLOYMENT_DATE);
     }
 
     /**

@@ -17,8 +17,8 @@ public interface EmployeeColumns extends BaseColumns {
     String DIVISION = "division";
     String SALARY = "salary";
     String COMPANY = "company";
-    String EMPLOYEMENT_YEAR = "employement_year";
-    String EMPLOYEMENT_DATE = "employement_date";
+    String EMPLOYMENT_YEAR = "employement_year";
+    String EMPLOYMENT_DATE = "employement_date";
     String COUNTRY_ID = "country_id";
     String COUNTRY_NAME = "country_name";
     String ENTERPRISE = "enterprise";
@@ -33,8 +33,8 @@ public interface EmployeeColumns extends BaseColumns {
             DIVISION,
             SALARY,
             COMPANY,
-            EMPLOYEMENT_YEAR,
-            EMPLOYEMENT_DATE,
+            EMPLOYMENT_YEAR,
+            EMPLOYMENT_DATE,
             COUNTRY_ID,
             COUNTRY_NAME,
             ENTERPRISE,

@@ -129,67 +129,67 @@ public class EmployeeSelection extends AbstractSelection<EmployeeSelection> {
     }
 
     public EmployeeSelection employementYear(int... value) {
-        addEquals(EmployeeColumns.EMPLOYEMENT_YEAR, toObjectArray(value));
+        addEquals(EmployeeColumns.EMPLOYMENT_YEAR, toObjectArray(value));
         return this;
     }
 
     public EmployeeSelection employementYearNot(int... value) {
-        addNotEquals(EmployeeColumns.EMPLOYEMENT_YEAR, toObjectArray(value));
+        addNotEquals(EmployeeColumns.EMPLOYMENT_YEAR, toObjectArray(value));
         return this;
     }
 
     public EmployeeSelection employementYearGt(int value) {
-        addGreaterThan(EmployeeColumns.EMPLOYEMENT_YEAR, value);
+        addGreaterThan(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
     public EmployeeSelection employementYearGtEq(int value) {
-        addGreaterThanOrEquals(EmployeeColumns.EMPLOYEMENT_YEAR, value);
+        addGreaterThanOrEquals(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
     public EmployeeSelection employementYearLt(int value) {
-        addLessThan(EmployeeColumns.EMPLOYEMENT_YEAR, value);
+        addLessThan(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
     public EmployeeSelection employementYearLtEq(int value) {
-        addLessThanOrEquals(EmployeeColumns.EMPLOYEMENT_YEAR, value);
+        addLessThanOrEquals(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
     public EmployeeSelection employementDate(Date... value) {
-        addEquals(EmployeeColumns.EMPLOYEMENT_DATE, value);
+        addEquals(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
     public EmployeeSelection employementDateNot(Date... value) {
-        addNotEquals(EmployeeColumns.EMPLOYEMENT_DATE, value);
+        addNotEquals(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
     public EmployeeSelection employementDate(long... value) {
-        addEquals(EmployeeColumns.EMPLOYEMENT_DATE, toObjectArray(value));
+        addEquals(EmployeeColumns.EMPLOYMENT_DATE, toObjectArray(value));
         return this;
     }
 
     public EmployeeSelection employementDateAfter(Date value) {
-        addGreaterThan(EmployeeColumns.EMPLOYEMENT_DATE, value);
+        addGreaterThan(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
     public EmployeeSelection employementDateAfterEq(Date value) {
-        addGreaterThanOrEquals(EmployeeColumns.EMPLOYEMENT_DATE, value);
+        addGreaterThanOrEquals(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
     public EmployeeSelection employementDateBefore(Date value) {
-        addLessThan(EmployeeColumns.EMPLOYEMENT_DATE, value);
+        addLessThan(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
     public EmployeeSelection employementDateBeforeEq(Date value) {
-        addLessThanOrEquals(EmployeeColumns.EMPLOYEMENT_DATE, value);
+        addLessThanOrEquals(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
