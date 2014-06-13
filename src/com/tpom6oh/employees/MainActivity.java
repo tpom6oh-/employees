@@ -42,12 +42,20 @@ public class MainActivity extends ActionBarActivity implements
     private static final String FILTER_HOLDER_TAG = "filter holder";
     public static final String SPINNER_DEFAULT_VALUE = "Any";
     public static final String SPINNER_DEFAULT_VALUE__ID = "-1";
-    private SimpleCursorAdapter cursorAdapter;
+  /*  private SimpleCursorAdapter cursorAdapter;*/
+    private EmployeesAdapter cursorAdapter;
     private ListView listView;
     private FilterHolder filterHolder;
-    private static String[] PROJECTION = new String[]{EmployeeColumns.NAME,
+    private static String[] PROJECTION = new String[]{
+            EmployeeColumns.NAME,
             EmployeeColumns.COMPANY,
             EmployeeColumns.SALARY,
+            EmployeeColumns.COUNTRY_NAME,
+            EmployeeColumns.DIVISION,
+            EmployeeColumns.SALARY,
+            EmployeeColumns.EMPLOYMENT_DATE,
+            EmployeeColumns.IMAGE_URL,
+            EmployeeColumns.ENTERPRISE,
             EmployeeColumns._ID};
     private static int MAX_SALARY;
 
@@ -60,10 +68,11 @@ public class MainActivity extends ActionBarActivity implements
 
         setContentView(R.layout.main);
         listView = (ListView) findViewById(R.id.employees_list_view);
-        cursorAdapter = new SimpleCursorAdapter(this, R.layout.headered_employee_list_item, null,
+/*        cursorAdapter = new SimpleCursorAdapter(this, R.layout.headered_employee_list_item, null,
                                                 PROJECTION, new int[] {R.id.employee_name,
                                                                        R.id.header,
-                                                                       R.id.employee_salary}, 0);
+                                                                       R.id.employee_salary}, 0);*/
+        cursorAdapter = new EmployeesAdapter(this, null, getLayoutInflater());
         listView.setAdapter(cursorAdapter);
 
         getSupportLoaderManager().initLoader(0, null, this);

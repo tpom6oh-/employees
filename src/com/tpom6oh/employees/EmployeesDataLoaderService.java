@@ -74,7 +74,11 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         try {
             HttpURLConnection conn = (HttpURLConnection)new URL(URL).openConnection();
             currentETag = conn.getHeaderField("ETag");
-            return !currentETag.equals(previousETag);
+            if (currentETag == null) {
+                return true;
+            } else {
+                return !currentETag.equals(previousETag);
+            }
         } catch (IOException e) {
             Log.e(TAG, "Failed to get ETag");
             return true;
