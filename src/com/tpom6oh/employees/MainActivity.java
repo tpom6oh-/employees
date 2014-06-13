@@ -3,6 +3,8 @@ package com.tpom6oh.employees;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -14,6 +16,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,16 +38,26 @@ import com.tpom6oh.employees.model.employee.EmployeeColumns;
 public class MainActivity extends ActionBarActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final String SEARCH_DIALOG_FRAGMENT_TAG = "search dialog fragment";
+    private static final String SEARCH_DIALOG_FRAGMENT_TAG = "search dialog fragment";
+    private static final String FILTER_HOLDER_TAG = "filter holder";
+    public static final String SPINNER_DEFAULT_VALUE = "Any";
+    public static final String SPINNER_DEFAULT_VALUE__ID = "-1";
     private SimpleCursorAdapter cursorAdapter;
     private ListView listView;
+    private FilterHolder filterHolder;
     private static String[] PROJECTION = new String[]{EmployeeColumns.NAME,
             EmployeeColumns.COMPANY,
-            EmployeeColumns.SALARY};;
+            EmployeeColumns.SALARY,
+            EmployeeColumns._ID};
+    private static int MAX_SALARY;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MAX_SALARY = getResources().getInteger(R.integer.max_salary);
+        initFilterHolder(savedInstanceState);
+
         setContentView(R.layout.main);
         listView = (ListView) findViewById(R.id.employees_list_view);
         cursorAdapter = new SimpleCursorAdapter(this, R.layout.headered_employee_list_item, null,
@@ -57,6 +70,20 @@ public class MainActivity extends ActionBarActivity implements
 
         Intent downloadData = new Intent(this, EmployeesDataLoaderService.class);
         startService(downloadData);
+    }
+
+    private void initFilterHolder(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            filterHolder = savedInstanceState.getParcelable(FILTER_HOLDER_TAG);
+        } else {
+            filterHolder = new FilterHolder();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(FILTER_HOLDER_TAG, filterHolder);
     }
 
     @Override
@@ -80,17 +107,37 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-    public void onFilter(FilterHolder filterHolder) {
+    public void onFilter() {
         getSupportLoaderManager().restartLoader(0, null, this);
     }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String selection = null;
+        String[] selectionArgs = null;
 
-        return new CursorLoader(this, EmployeeColumns.CONTENT_URI,
-                                EmployeeColumns.FULL_PROJECTION, null, null,
-                                EmployeeColumns.COMPANY);
+        if (!filterHolder.isEmpty()) {
+            selection = EmployeeColumns.COMPANY + " LIKE ? AND " + EmployeeColumns.NAME + " LIKE " +
+                        "? AND " + EmployeeColumns.DIVISION + " LIKE ? AND " +
+                        EmployeeColumns.EMPLOYMENT_YEAR + " LIKE ? AND " + EmployeeColumns.SALARY +
+                        " BETWEEN ? AND ?";
+
+            String year = filterHolder.employmentYear.equals(SPINNER_DEFAULT_VALUE) ? "%" :
+                          filterHolder.employmentYear;
+            String division = filterHolder.division.equals(SPINNER_DEFAULT_VALUE) ? "%" :
+                              filterHolder.division;
+
+            selectionArgs = new String[] {"%" + filterHolder.companyName + "%",
+                                          "%" + filterHolder.employeeName + "%",
+                                          division,
+                                          year,
+                                          String.valueOf(filterHolder.minSalary),
+                                          String.valueOf(filterHolder.maxSalary)};
+        }
+
+        return new CursorLoader(this, EmployeeColumns.CONTENT_URI, PROJECTION,
+                                selection, selectionArgs, EmployeeColumns.COMPANY);
     }
 
     @Override
@@ -108,8 +155,6 @@ public class MainActivity extends ActionBarActivity implements
 
         public static final int DIVISION_LOADER_ID = 0;
         public static final int YEAR_LOADER_ID = 1;
-        private static String FILTER_HOLDER_TAG = "filter holder";
-        private FilterHolder filterHolder;
         private Spinner divisionSpinner;
         private Spinner yearSpinner;
         private EditText companyNameEditText;
@@ -135,16 +180,6 @@ public class MainActivity extends ActionBarActivity implements
         }
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            if (savedInstanceState == null) {
-                filterHolder = new FilterHolder();
-            } else {
-                filterHolder = savedInstanceState.getParcelable(FILTER_HOLDER_TAG);
-            }
-        }
-
-        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             getDialog().setTitle(R.string.search_label);
@@ -155,17 +190,28 @@ public class MainActivity extends ActionBarActivity implements
             setSpinners();
             setButtons();
             setSeekBars();
+            populateFields(mainActivity.filterHolder);
 
             return filterView;
         }
 
+        private void populateFields(FilterHolder filterHolder) {
+            minSalaryBar.setProgress(filterHolder.minSalary);
+            maxSalaryBar.setProgress(filterHolder.maxSalary);
+            companyNameEditText.setText(filterHolder.companyName);
+            employeeNameEditText.setText(filterHolder.employeeName);
+        }
+
         private void setSeekBars() {
+            minSalaryText.setText(minSalaryText.getText().toString() + "0$");
+            maxSalaryText.setText(maxSalaryText.getText().toString() + MAX_SALARY + "$");
+
             SeekBar.OnSeekBarChangeListener listener = new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if (seekBar.getId() == R.id.max_salary_bar) {
                         maxSalaryText.setText(getString(R.string.max_salary_text) + i + "$");
-                    } else if (seekBar.getId() == R.id.min_salary_seek_bar) {
+                    } else if (seekBar.getId() == R.id.min_salary_bar) {
                         minSalaryText.setText(getString(R.string.min_salary_text) + i + "$");
                     }
                 }
@@ -196,11 +242,13 @@ public class MainActivity extends ActionBarActivity implements
                                 return;
                             }
 
-                            filterHolder.employeeName = employeeNameEditText.getText().toString();
-                            filterHolder.companyName = companyNameEditText.getText().toString();
-                            filterHolder.maxSalary = maxSalary;
-                            filterHolder.minSalary = minSalary;
-                            mainActivity.onFilter(filterHolder);
+                            mainActivity.filterHolder.employeeName =
+                                    employeeNameEditText.getText().toString();
+                            mainActivity.filterHolder.companyName =
+                                    companyNameEditText.getText().toString();
+                            mainActivity.filterHolder.maxSalary = maxSalary;
+                            mainActivity.filterHolder.minSalary = minSalary;
+                            mainActivity.onFilter();
                             dismiss();
                             break;
                         case R.id.cancel_button:
@@ -220,7 +268,7 @@ public class MainActivity extends ActionBarActivity implements
         private void initViews(View filterView) {
             divisionSpinner = (Spinner) filterView.findViewById(R.id.division_spinner);
             yearSpinner = (Spinner) filterView.findViewById(R.id.employment_year_spinner);
-            minSalaryBar = (SeekBar) filterView.findViewById(R.id.min_salary_seek_bar);
+            minSalaryBar = (SeekBar) filterView.findViewById(R.id.min_salary_bar);
             minSalaryText = (TextView) filterView.findViewById(R.id.min_salary_text);
             maxSalaryBar = (SeekBar) filterView.findViewById(R.id.max_salary_bar);
             maxSalaryText = (TextView) filterView.findViewById(R.id.max_salary_text);
@@ -258,15 +306,13 @@ public class MainActivity extends ActionBarActivity implements
             return simpleCursorAdapter;
         }
 
-        @Override
-        public void onSaveInstanceState(Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putParcelable(FILTER_HOLDER_TAG, filterHolder);
-        }
-
         private void resetFields() {
             divisionSpinner.setSelection(0);
             yearSpinner.setSelection(0);
+            companyNameEditText.setText("");
+            employeeNameEditText.setText("");
+            minSalaryBar.setProgress(0);
+            maxSalaryBar.setProgress(maxSalaryBar.getMax());
         }
 
         @Override
@@ -300,11 +346,22 @@ public class MainActivity extends ActionBarActivity implements
         private void swapSpinnerCursor(Loader<Cursor> objectLoader, Cursor cursor) {
             switch (objectLoader.getId()) {
                 case DIVISION_LOADER_ID:
-                    divisionAdapter.swapCursor(cursor);
+                    divisionAdapter.swapCursor(withDefaultField(cursor, EmployeeColumns.DIVISION));
+                    divisionSpinner.setSelection(mainActivity.filterHolder.divisionSpinnerSelection);
                     break;
                 case YEAR_LOADER_ID:
-                    yearAdapter.swapCursor(cursor);
+                    yearAdapter.swapCursor(withDefaultField(cursor, EmployeeColumns.EMPLOYMENT_YEAR));
+                    yearSpinner.setSelection(mainActivity.filterHolder.yearSpinnerSelection);
+                    break;
             }
+        }
+
+        private Cursor withDefaultField(Cursor cursor, String targetColumn) {
+            MatrixCursor extras = new MatrixCursor(new String[] { EmployeeColumns._ID,
+                                                                  targetColumn });
+            extras.addRow(new String[] {SPINNER_DEFAULT_VALUE__ID, SPINNER_DEFAULT_VALUE });
+            Cursor[] cursors = { extras, cursor };
+            return new MergeCursor(cursors);
         }
 
         private class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
@@ -315,9 +372,13 @@ public class MainActivity extends ActionBarActivity implements
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String spinnerText = ((TextView)view).getText().toString();
                 if (adapterView.getId() == R.id.division_spinner) {
-                    filterHolder.divsion = spinnerText;
+                    mainActivity.filterHolder.division = spinnerText;
+                    mainActivity.filterHolder.divisionSpinnerSelection = adapterView
+                            .getSelectedItemPosition();
                 } else if (adapterView.getId() == R.id.employment_year_spinner) {
-                    filterHolder.employmentYear = Integer.parseInt(spinnerText);
+                    mainActivity.filterHolder.employmentYear = spinnerText;
+                    mainActivity.filterHolder.yearSpinnerSelection = adapterView
+                            .getSelectedItemPosition();
                 }
             }
 
@@ -328,32 +389,31 @@ public class MainActivity extends ActionBarActivity implements
 
     private static class FilterHolder implements Parcelable {
         private int minSalary;
-        private int maxSalary;
-        private String divsion;
-        private int employmentYear;
-        private String companyName;
-        private String employeeName;
-
-        public FilterHolder(int minSalary, int maxSalary, String divsion, int employmentYear,
-                             String companyName, String employeeName) {
-            this.minSalary = minSalary;
-            this.maxSalary = maxSalary;
-            this.divsion = divsion;
-            this.employmentYear = employmentYear;
-            this.companyName = companyName;
-            this.employeeName = employeeName;
-        }
+        private int maxSalary = MAX_SALARY;
+        private String division = SPINNER_DEFAULT_VALUE;
+        private String employmentYear = SPINNER_DEFAULT_VALUE;
+        private String companyName = "";
+        private String employeeName = "";
+        private int divisionSpinnerSelection;
+        private int yearSpinnerSelection;
 
         public FilterHolder(Parcel in){
             minSalary = in.readInt();
             maxSalary = in.readInt();
-            divsion = in.readString();
-            employmentYear = in.readInt();
+            division = in.readString();
+            employmentYear = in.readString();
             companyName = in.readString();
             employeeName = in.readString();
+            divisionSpinnerSelection = in.readInt();
+            yearSpinnerSelection = in.readInt();
         }
 
-        private FilterHolder() {
+        private FilterHolder() {}
+
+        private boolean isEmpty() {
+            return TextUtils.isEmpty(companyName) && TextUtils.isEmpty(employeeName) && minSalary
+            == 0 && maxSalary == MAX_SALARY && division.equals(SPINNER_DEFAULT_VALUE) &&
+                   employmentYear.equals(SPINNER_DEFAULT_VALUE);
         }
 
         @Override
@@ -365,10 +425,12 @@ public class MainActivity extends ActionBarActivity implements
         public void writeToParcel(Parcel out, int flags) {
             out.writeInt(minSalary);
             out.writeInt(maxSalary);
-            out.writeString(divsion);
-            out.writeInt(employmentYear);
+            out.writeString(division);
+            out.writeString(employmentYear);
             out.writeString(companyName);
             out.writeString(employeeName);
+            out.writeInt(divisionSpinnerSelection);
+            out.writeInt(yearSpinnerSelection);
         }
 
         public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
