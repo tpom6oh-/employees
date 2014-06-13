@@ -1,7 +1,9 @@
 package com.tpom6oh.employees;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -27,6 +29,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tpom6oh.employees.model.EmployeesProvider;
 import com.tpom6oh.employees.model.employee.EmployeeColumns;
 
 public class MainActivity extends ActionBarActivity implements
@@ -100,8 +103,11 @@ public class MainActivity extends ActionBarActivity implements
         cursorAdapter.swapCursor(null);
     }
 
-    public static class SearchDialogFragment extends DialogFragment {
+    public static class SearchDialogFragment extends DialogFragment implements LoaderManager
+            .LoaderCallbacks<Cursor> {
 
+        public static final int DIVISION_LOADER_ID = 0;
+        public static final int YEAR_LOADER_ID = 1;
         private static String FILTER_HOLDER_TAG = "filter holder";
         private FilterHolder filterHolder;
         private Spinner divisionSpinner;
@@ -116,7 +122,17 @@ public class MainActivity extends ActionBarActivity implements
         private Button resetButton;
         private Button cancelButton;
 
+        private MainActivity mainActivity;
+        private SimpleCursorAdapter divisionAdapter;
+        private SimpleCursorAdapter yearAdapter;
+
         public SearchDialogFragment() {}
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            mainActivity = (MainActivity) activity;
+        }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -184,7 +200,7 @@ public class MainActivity extends ActionBarActivity implements
                             filterHolder.companyName = companyNameEditText.getText().toString();
                             filterHolder.maxSalary = maxSalary;
                             filterHolder.minSalary = minSalary;
-                            ((MainActivity)getActivity()).onFilter(filterHolder);
+                            mainActivity.onFilter(filterHolder);
                             dismiss();
                             break;
                         case R.id.cancel_button:
@@ -217,10 +233,29 @@ public class MainActivity extends ActionBarActivity implements
 
         private void setSpinners() {
             AdapterView.OnItemSelectedListener selectedListener = new MyOnItemSelectedListener();
-            populateSpinner(divisionSpinner, EmployeeColumns.DIVISION);
+
+            divisionAdapter = getSpinnerCursorAdapter(EmployeeColumns.DIVISION);
+            divisionSpinner.setAdapter(divisionAdapter);
+            getLoaderManager().initLoader(DIVISION_LOADER_ID, null, this);
             divisionSpinner.setOnItemSelectedListener(selectedListener);
-            populateSpinner(yearSpinner, EmployeeColumns.EMPLOYEMENT_YEAR);
+
+            yearAdapter = getSpinnerCursorAdapter(EmployeeColumns.EMPLOYMENT_YEAR);
+            yearSpinner.setAdapter(yearAdapter);
+            getLoaderManager().initLoader(YEAR_LOADER_ID, null, this);
             yearSpinner.setOnItemSelectedListener(selectedListener);
+        }
+
+        private SimpleCursorAdapter getSpinnerCursorAdapter(String targetColumn) {
+            SimpleCursorAdapter simpleCursorAdapter =
+                    new SimpleCursorAdapter(getActivity(),
+                                            android.R.layout.simple_spinner_item,
+                                            null,
+                                            new String[]{targetColumn},
+                                            new int[]{android.R.id.text1},
+                                            0);
+            simpleCursorAdapter.setDropDownViewResource(android.R.layout
+                                                            .simple_spinner_dropdown_item);
+            return simpleCursorAdapter;
         }
 
         @Override
@@ -229,15 +264,47 @@ public class MainActivity extends ActionBarActivity implements
             outState.putParcelable(FILTER_HOLDER_TAG, filterHolder);
         }
 
-        private void populateSpinner(final Spinner spinner, final String targetColumn) {
-            new SpinnerPopulateAsyncTask(targetColumn,
-                                         spinner,
-                                         getActivity()).execute();
-        }
-
         private void resetFields() {
             divisionSpinner.setSelection(0);
             yearSpinner.setSelection(0);
+        }
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+            String column;
+            switch (i) {
+                case DIVISION_LOADER_ID:
+                    column = EmployeeColumns.DIVISION;
+                    break;
+                case YEAR_LOADER_ID:
+                    column = EmployeeColumns.EMPLOYMENT_YEAR;
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            String[] projection = new String[]{EmployeeColumns._ID, column};
+            Uri groupedUri = EmployeesProvider.groupBy(EmployeeColumns.CONTENT_URI, column);
+            return new CursorLoader(getActivity(), groupedUri, projection, null, null, column);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> objectLoader, Cursor cursor) {
+            swapSpinnerCursor(objectLoader, cursor);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> objectLoader) {
+            swapSpinnerCursor(objectLoader, null);
+        }
+
+        private void swapSpinnerCursor(Loader<Cursor> objectLoader, Cursor cursor) {
+            switch (objectLoader.getId()) {
+                case DIVISION_LOADER_ID:
+                    divisionAdapter.swapCursor(cursor);
+                    break;
+                case YEAR_LOADER_ID:
+                    yearAdapter.swapCursor(cursor);
+            }
         }
 
         private class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
