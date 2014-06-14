@@ -12,7 +12,7 @@
                  android:label="@string/app_name"
                  android:icon="@drawable/ic_launcher"
             >
-        <activity android:name="MainActivity"
+        <activity android:name=".ui.MainActivity"
                   android:theme="@style/AppBaseTheme"
                   android:label="@string/app_name">
             <intent-filter>
@@ -24,6 +24,6 @@
                 android:name="com.tpom6oh.employees.model.EmployeesProvider"
                 android:authorities="com.tpom6oh.employees.provider"
                 android:exported="false" />
-        <service android:name=".EmployeesDataLoaderService" android:label="DataLoaderService"/>
+        <service android:name=".data.EmployeesDataLoaderService" android:label="DataLoaderService"/>
     </application>
 </manifest>

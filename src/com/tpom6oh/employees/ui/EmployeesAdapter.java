@@ -1,4 +1,4 @@
-package com.tpom6oh.employees;
+package com.tpom6oh.employees.ui;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+import com.tpom6oh.employees.R;
 import com.tpom6oh.employees.model.employee.EmployeeColumns;
 
 import java.text.DateFormat;

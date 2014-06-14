@@ -1,4 +1,4 @@
-package com.tpom6oh.employees;
+package com.tpom6oh.employees.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -32,6 +32,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tpom6oh.employees.data.EmployeesDataLoaderService;
+import com.tpom6oh.employees.R;
 import com.tpom6oh.employees.model.EmployeesProvider;
 import com.tpom6oh.employees.model.employee.EmployeeColumns;
 
