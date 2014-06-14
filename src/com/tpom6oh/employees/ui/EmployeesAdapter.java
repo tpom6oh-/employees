@@ -6,7 +6,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -119,11 +118,6 @@ public class EmployeesAdapter extends CursorAdapter {
             view.setTag(R.id.employee_name, viewHolder);
         }
         return viewHolder;
-    }
-
-    @Override
-    public Filter getFilter() {
-        return super.getFilter();
     }
 
     @Override

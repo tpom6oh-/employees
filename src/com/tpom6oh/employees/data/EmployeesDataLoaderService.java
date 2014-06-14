@@ -184,7 +184,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
                     .putImageUrl(employeeInfo.getImageUri());
             contentValues[i] = employeeContentValues.values();
         }
-        Uri uri = disableUpdateNotificationOnUri();
+        Uri uri = EmployeesProvider.notify(EmployeeColumns.CONTENT_URI, false);
         getContentResolver().bulkInsert(uri, contentValues);
         employeesBuffer.clear();
     }
@@ -199,13 +199,8 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         String where = "country_id = ?";
         String[] args = {String.valueOf(country.getCountryId())};
 
-        Uri uri = disableUpdateNotificationOnUri();
+        Uri uri = EmployeesProvider.notify(EmployeeColumns.CONTENT_URI, false);
         getContentResolver().update(uri, contentValues, where, args);
-    }
-
-    private Uri disableUpdateNotificationOnUri() {
-        return EmployeeColumns.CONTENT_URI.buildUpon()
-                    .appendQueryParameter(EmployeesProvider.QUERY_NOTIFY, "false").build();
     }
 
     private int parseYear(Date employmentDate) {
