@@ -1,11 +1,11 @@
 package com.tpom6oh.employees.model.employee;
 
+import java.util.Date;
+
 import android.content.ContentResolver;
 import android.net.Uri;
 
 import com.tpom6oh.employees.model.base.AbstractContentValues;
-
-import java.util.Date;
 
 /**
  * Content values wrapper for the {@code employee} table.
@@ -42,6 +42,14 @@ public class EmployeeContentValues extends AbstractContentValues {
 
 
 
+    public EmployeeContentValues putTeam(String value) {
+        if (value == null) throw new IllegalArgumentException("value for team must not be null");
+        mContentValues.put(EmployeeColumns.TEAM, value);
+        return this;
+    }
+
+
+
     public EmployeeContentValues putSalary(int value) {
         mContentValues.put(EmployeeColumns.SALARY, value);
         return this;
@@ -57,21 +65,21 @@ public class EmployeeContentValues extends AbstractContentValues {
 
 
 
-    public EmployeeContentValues putEmployementYear(int value) {
+    public EmployeeContentValues putEmploymentYear(int value) {
         mContentValues.put(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
 
 
-    public EmployeeContentValues putEmployementDate(Date value) {
-        if (value == null) throw new IllegalArgumentException("value for employementDate must not be null");
+    public EmployeeContentValues putEmploymentDate(Date value) {
+        if (value == null) throw new IllegalArgumentException("value for employmentDate must not be null");
         mContentValues.put(EmployeeColumns.EMPLOYMENT_DATE, value.getTime());
         return this;
     }
 
 
-    public EmployeeContentValues putEmployementDate(long value) {
+    public EmployeeContentValues putEmploymentDate(long value) {
         mContentValues.put(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }

@@ -27,6 +27,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
             + EmployeeColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + EmployeeColumns.NAME + " TEXT NOT NULL, "
             + EmployeeColumns.DIVISION + " TEXT NOT NULL, "
+            + EmployeeColumns.TEAM + " TEXT NOT NULL, "
             + EmployeeColumns.SALARY + " INTEGER NOT NULL, "
             + EmployeeColumns.COMPANY + " TEXT NOT NULL, "
             + EmployeeColumns.EMPLOYMENT_YEAR + " INTEGER NOT NULL, "

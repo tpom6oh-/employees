@@ -8,7 +8,8 @@
             android:id="@+id/employee_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="test"
+            style="@style/EmployeesListTextMargins"
+            android:textStyle="bold"
             />
 
     <TextView
@@ -16,7 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/employee_name"
-            android:text="test"
+            android:text="@string/division_label"
+            style="@style/EmployeesListTextMargins"
             />
 
     <TextView
@@ -25,7 +27,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/employee_name"
             android:layout_toRightOf="@id/employee_division"
-            android:text="test"
+            android:text="@string/team_label"
+            style="@style/EmployeesListTextMargins"
             />
 
     <TextView
@@ -33,7 +36,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/employee_division"
-            android:text="test"
+            android:text="@string/salary_label"
+            style="@style/EmployeesListTextMargins"
             />
 
     <TextView
@@ -41,16 +45,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/employee_salary"
-            android:text="test"
+            android:text="@string/employment_date_label"
+            style="@style/EmployeesListTextMargins"
             />
 
     <ImageView
             android:id="@+id/employee_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_launcher"
+            android:scaleType="fitCenter"
             />
 
 </RelativeLayout>

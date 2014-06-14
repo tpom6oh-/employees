@@ -33,6 +33,15 @@ public class EmployeeCursor extends AbstractCursor {
     }
 
     /**
+     * Get the {@code team} value.
+     * Cannot be {@code null}.
+     */
+    public String getTeam() {
+        Integer index = getCachedColumnIndexOrThrow(EmployeeColumns.TEAM);
+        return getString(index);
+    }
+
+    /**
      * Get the {@code salary} value.
      */
     public int getSalary() {
@@ -49,17 +58,17 @@ public class EmployeeCursor extends AbstractCursor {
     }
 
     /**
-     * Get the {@code employement_year} value.
+     * Get the {@code employment_year} value.
      */
-    public int getEmployementYear() {
+    public int getEmploymentYear() {
         return getIntegerOrNull(EmployeeColumns.EMPLOYMENT_YEAR);
     }
 
     /**
-     * Get the {@code employement_date} value.
+     * Get the {@code employment_date} value.
      * Cannot be {@code null}.
      */
-    public Date getEmployementDate() {
+    public Date getEmploymentDate() {
         return getDate(EmployeeColumns.EMPLOYMENT_DATE);
     }
 

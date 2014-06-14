@@ -1,11 +1,11 @@
 package com.tpom6oh.employees.model.base;
 
-import android.content.ContentResolver;
-import android.net.Uri;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import android.content.ContentResolver;
+import android.net.Uri;
 
 public abstract class AbstractSelection <T extends AbstractSelection<?>> {
     private static final String EQ = "=?";

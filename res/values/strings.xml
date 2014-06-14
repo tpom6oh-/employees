@@ -12,4 +12,7 @@
     <string name="search_button_label">Search</string>
     <string name="reset_button_label">Reset</string>
     <string name="salary_error">Minimum salary should be less than maximum salary</string>
+    <string name="team_label">Team</string>
+    <string name="salary_label">Salary</string>
+    <string name="employment_date_label">Employment date</string>
 </resources>

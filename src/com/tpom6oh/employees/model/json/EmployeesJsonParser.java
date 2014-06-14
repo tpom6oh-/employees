@@ -99,10 +99,6 @@ public class EmployeesJsonParser {
             reader.endObject();
         }
         reader.endArray();
-
-        if (parseListener !=null) {
-            parseListener.onParseDataEnd();
-        }
     }
 
     private void parseDivisionList(JsonReader reader) throws IOException {
@@ -181,6 +177,10 @@ public class EmployeesJsonParser {
         }
         reader.endArray();
         reader.close();
+
+        if (parseListener !=null) {
+            parseListener.onParseDataEnd();
+        }
     }
 
     private Date parseEmploymentDate(Employee employee) {

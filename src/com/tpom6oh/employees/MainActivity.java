@@ -42,22 +42,24 @@ public class MainActivity extends ActionBarActivity implements
     private static final String FILTER_HOLDER_TAG = "filter holder";
     public static final String SPINNER_DEFAULT_VALUE = "Any";
     public static final String SPINNER_DEFAULT_VALUE__ID = "-1";
-  /*  private SimpleCursorAdapter cursorAdapter;*/
+
+    private static int MAX_SALARY;
+
     private EmployeesAdapter cursorAdapter;
-    private ListView listView;
     private FilterHolder filterHolder;
+
     private static String[] PROJECTION = new String[]{
             EmployeeColumns.NAME,
             EmployeeColumns.COMPANY,
             EmployeeColumns.SALARY,
             EmployeeColumns.COUNTRY_NAME,
+            EmployeeColumns.TEAM,
             EmployeeColumns.DIVISION,
             EmployeeColumns.SALARY,
             EmployeeColumns.EMPLOYMENT_DATE,
             EmployeeColumns.IMAGE_URL,
             EmployeeColumns.ENTERPRISE,
             EmployeeColumns._ID};
-    private static int MAX_SALARY;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,18 +69,23 @@ public class MainActivity extends ActionBarActivity implements
         initFilterHolder(savedInstanceState);
 
         setContentView(R.layout.main);
-        listView = (ListView) findViewById(R.id.employees_list_view);
-/*        cursorAdapter = new SimpleCursorAdapter(this, R.layout.headered_employee_list_item, null,
-                                                PROJECTION, new int[] {R.id.employee_name,
-                                                                       R.id.header,
-                                                                       R.id.employee_salary}, 0);*/
-        cursorAdapter = new EmployeesAdapter(this, null, getLayoutInflater());
-        listView.setAdapter(cursorAdapter);
+        setListView();
 
         getSupportLoaderManager().initLoader(0, null, this);
 
+        updateData();
+    }
+
+    private void updateData() {
         Intent downloadData = new Intent(this, EmployeesDataLoaderService.class);
         startService(downloadData);
+    }
+
+    private void setListView() {
+        ListView employeesList = (ListView) findViewById(R.id.employees_list_view);
+
+        cursorAdapter = new EmployeesAdapter(this, null, getLayoutInflater());
+        employeesList.setAdapter(cursorAdapter);
     }
 
     private void initFilterHolder(Bundle savedInstanceState) {
@@ -106,14 +113,18 @@ public class MainActivity extends ActionBarActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-                FragmentManager fm = getSupportFragmentManager();
-                SearchDialogFragment searchDialogFragment =
-                        new SearchDialogFragment();
-                searchDialogFragment.show(fm, SEARCH_DIALOG_FRAGMENT_TAG);
+                showSearchDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showSearchDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        SearchDialogFragment searchDialogFragment =
+                new SearchDialogFragment();
+        searchDialogFragment.show(fm, SEARCH_DIALOG_FRAGMENT_TAG);
     }
 
     public void onFilter() {
@@ -127,26 +138,37 @@ public class MainActivity extends ActionBarActivity implements
         String[] selectionArgs = null;
 
         if (!filterHolder.isEmpty()) {
-            selection = EmployeeColumns.COMPANY + " LIKE ? AND " + EmployeeColumns.NAME + " LIKE " +
-                        "? AND " + EmployeeColumns.DIVISION + " LIKE ? AND " +
-                        EmployeeColumns.EMPLOYMENT_YEAR + " LIKE ? AND " + EmployeeColumns.SALARY +
-                        " BETWEEN ? AND ?";
-
-            String year = filterHolder.employmentYear.equals(SPINNER_DEFAULT_VALUE) ? "%" :
-                          filterHolder.employmentYear;
-            String division = filterHolder.division.equals(SPINNER_DEFAULT_VALUE) ? "%" :
-                              filterHolder.division;
-
-            selectionArgs = new String[] {"%" + filterHolder.companyName + "%",
-                                          "%" + filterHolder.employeeName + "%",
-                                          division,
-                                          year,
-                                          String.valueOf(filterHolder.minSalary),
-                                          String.valueOf(filterHolder.maxSalary)};
+            selection = generateSelection();
+            selectionArgs = generateSelectionArgs();
         }
 
-        return new CursorLoader(this, EmployeeColumns.CONTENT_URI, PROJECTION,
+        CursorLoader cursorLoader = new CursorLoader(this, EmployeeColumns.CONTENT_URI, PROJECTION,
                                 selection, selectionArgs, EmployeeColumns.COMPANY);
+        cursorLoader.rollbackContentChanged();
+        return cursorLoader;
+    }
+
+    private String generateSelection() {
+        return EmployeeColumns.COMPANY + " LIKE ? AND " + EmployeeColumns.NAME + " LIKE " +
+                    "? AND " + EmployeeColumns.DIVISION + " LIKE ? AND " +
+                    EmployeeColumns.EMPLOYMENT_YEAR + " LIKE ? AND " + EmployeeColumns.SALARY +
+                    " BETWEEN ? AND ?";
+    }
+
+    private String[] generateSelectionArgs() {
+        String[] selectionArgs;
+        String year = filterHolder.employmentYear.equals(SPINNER_DEFAULT_VALUE) ? "%" :
+                      filterHolder.employmentYear;
+        String division = filterHolder.division.equals(SPINNER_DEFAULT_VALUE) ? "%" :
+                          filterHolder.division;
+
+        selectionArgs = new String[] {"%" + filterHolder.companyName + "%",
+                                      "%" + filterHolder.employeeName + "%",
+                                      division,
+                                      year,
+                                      String.valueOf(filterHolder.minSalary),
+                                      String.valueOf(filterHolder.maxSalary)};
+        return selectionArgs;
     }
 
     @Override
@@ -164,6 +186,7 @@ public class MainActivity extends ActionBarActivity implements
 
         public static final int DIVISION_LOADER_ID = 0;
         public static final int YEAR_LOADER_ID = 1;
+
         private Spinner divisionSpinner;
         private Spinner yearSpinner;
         private EditText companyNameEditText;
@@ -289,7 +312,7 @@ public class MainActivity extends ActionBarActivity implements
         }
 
         private void setSpinners() {
-            AdapterView.OnItemSelectedListener selectedListener = new MyOnItemSelectedListener();
+            AdapterView.OnItemSelectedListener selectedListener = new OnSpinnerItemSelectedListener();
 
             divisionAdapter = getSpinnerCursorAdapter(EmployeeColumns.DIVISION);
             divisionSpinner.setAdapter(divisionAdapter);
@@ -321,7 +344,7 @@ public class MainActivity extends ActionBarActivity implements
             companyNameEditText.setText("");
             employeeNameEditText.setText("");
             minSalaryBar.setProgress(0);
-            maxSalaryBar.setProgress(maxSalaryBar.getMax());
+            maxSalaryBar.setProgress(MAX_SALARY);
         }
 
         @Override
@@ -373,9 +396,9 @@ public class MainActivity extends ActionBarActivity implements
             return new MergeCursor(cursors);
         }
 
-        private class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
+        private class OnSpinnerItemSelectedListener implements AdapterView.OnItemSelectedListener {
 
-            public MyOnItemSelectedListener() {}
+            public OnSpinnerItemSelectedListener() {}
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

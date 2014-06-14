@@ -1,12 +1,12 @@
 package com.tpom6oh.employees.model.employee;
 
-import java.util.Date;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
 import com.tpom6oh.employees.model.base.AbstractSelection;
+
+import java.util.Date;
 
 /**
  * Selection for the {@code employee} table.
@@ -83,6 +83,21 @@ public class EmployeeSelection extends AbstractSelection<EmployeeSelection> {
         return this;
     }
 
+    public EmployeeSelection team(String... value) {
+        addEquals(EmployeeColumns.TEAM, value);
+        return this;
+    }
+
+    public EmployeeSelection teamNot(String... value) {
+        addNotEquals(EmployeeColumns.TEAM, value);
+        return this;
+    }
+
+    public EmployeeSelection teamLike(String... value) {
+        addLike(EmployeeColumns.TEAM, value);
+        return this;
+    }
+
     public EmployeeSelection salary(int... value) {
         addEquals(EmployeeColumns.SALARY, toObjectArray(value));
         return this;
@@ -128,67 +143,67 @@ public class EmployeeSelection extends AbstractSelection<EmployeeSelection> {
         return this;
     }
 
-    public EmployeeSelection employementYear(int... value) {
+    public EmployeeSelection employmentYear(int... value) {
         addEquals(EmployeeColumns.EMPLOYMENT_YEAR, toObjectArray(value));
         return this;
     }
 
-    public EmployeeSelection employementYearNot(int... value) {
+    public EmployeeSelection employmentYearNot(int... value) {
         addNotEquals(EmployeeColumns.EMPLOYMENT_YEAR, toObjectArray(value));
         return this;
     }
 
-    public EmployeeSelection employementYearGt(int value) {
+    public EmployeeSelection employmentYearGt(int value) {
         addGreaterThan(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
-    public EmployeeSelection employementYearGtEq(int value) {
+    public EmployeeSelection employmentYearGtEq(int value) {
         addGreaterThanOrEquals(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
-    public EmployeeSelection employementYearLt(int value) {
+    public EmployeeSelection employmentYearLt(int value) {
         addLessThan(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
-    public EmployeeSelection employementYearLtEq(int value) {
+    public EmployeeSelection employmentYearLtEq(int value) {
         addLessThanOrEquals(EmployeeColumns.EMPLOYMENT_YEAR, value);
         return this;
     }
 
-    public EmployeeSelection employementDate(Date... value) {
+    public EmployeeSelection employmentDate(Date... value) {
         addEquals(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
-    public EmployeeSelection employementDateNot(Date... value) {
+    public EmployeeSelection employmentDateNot(Date... value) {
         addNotEquals(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
-    public EmployeeSelection employementDate(long... value) {
+    public EmployeeSelection employmentDate(long... value) {
         addEquals(EmployeeColumns.EMPLOYMENT_DATE, toObjectArray(value));
         return this;
     }
 
-    public EmployeeSelection employementDateAfter(Date value) {
+    public EmployeeSelection employmentDateAfter(Date value) {
         addGreaterThan(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
-    public EmployeeSelection employementDateAfterEq(Date value) {
+    public EmployeeSelection employmentDateAfterEq(Date value) {
         addGreaterThanOrEquals(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
-    public EmployeeSelection employementDateBefore(Date value) {
+    public EmployeeSelection employmentDateBefore(Date value) {
         addLessThan(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
 
-    public EmployeeSelection employementDateBeforeEq(Date value) {
+    public EmployeeSelection employmentDateBeforeEq(Date value) {
         addLessThanOrEquals(EmployeeColumns.EMPLOYMENT_DATE, value);
         return this;
     }
