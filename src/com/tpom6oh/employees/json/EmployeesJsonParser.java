@@ -1,4 +1,4 @@
-package com.tpom6oh.employees.model.json;
+package com.tpom6oh.employees.json;
 
 import android.util.Log;
 

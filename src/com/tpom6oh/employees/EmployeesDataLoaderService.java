@@ -7,14 +7,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 
 import com.tpom6oh.employees.model.EmployeeInfo;
+import com.tpom6oh.employees.model.EmployeesProvider;
 import com.tpom6oh.employees.model.employee.EmployeeColumns;
 import com.tpom6oh.employees.model.employee.EmployeeContentValues;
-import com.tpom6oh.employees.model.json.CountryInfo;
-import com.tpom6oh.employees.model.json.EmployeesJsonParser;
-import com.tpom6oh.employees.model.json.IParseListener;
+import com.tpom6oh.employees.json.CountryInfo;
+import com.tpom6oh.employees.json.EmployeesJsonParser;
+import com.tpom6oh.employees.json.IParseListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,6 +131,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
 
     @Override
     public void onParseDataEnd() {
+        getContentResolver().notifyChange(EmployeeColumns.CONTENT_URI, null);
         if (parsingFromWeb) {
             saveNewETagToPreferences(currentETag);
         } else {
@@ -154,15 +157,17 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
                     .putCompany(employeeInfo.getCompanyName())
                     .putCountryId(employeeInfo.getCountryId())
                     .putCountryNameNull()
+                    .putTeam(employeeInfo.getTeamName())
                     .putDivision(employeeInfo.getDivisionName())
-                    .putEmployementDate(employeeInfo.getEmploymentDate())
-                    .putEmployementYear(employmentYear)
+                    .putEmploymentDate(employeeInfo.getEmploymentDate())
+                    .putEmploymentYear(employmentYear)
                     .putSalary(employeeInfo.getMonthlySalary())
                     .putEnterprise(employeeInfo.getEnterpriseName())
                     .putImageUrl(employeeInfo.getImageUri());
             contentValues[i] = employeeContentValues.values();
         }
-        getContentResolver().bulkInsert(EmployeeColumns.CONTENT_URI, contentValues);
+        Uri uri = disableUpdateNotificationOnUri();
+        getContentResolver().bulkInsert(uri, contentValues);
         employeesBuffer.clear();
     }
 
@@ -173,7 +178,13 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         String where = "country_id = ?";
         String[] args = {String.valueOf(country.getCountryId())};
 
-        getContentResolver().update(EmployeeColumns.CONTENT_URI, contentValues, where, args);
+        Uri uri = disableUpdateNotificationOnUri();
+        getContentResolver().update(uri, contentValues, where, args);
+    }
+
+    private Uri disableUpdateNotificationOnUri() {
+        return EmployeeColumns.CONTENT_URI.buildUpon()
+                    .appendQueryParameter(EmployeesProvider.QUERY_NOTIFY, "false").build();
     }
 
     private int parseYear(Date employmentDate) {

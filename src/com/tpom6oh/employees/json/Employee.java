@@ -1,5 +1,5 @@
 
-package com.tpom6oh.employees.model.json;
+package com.tpom6oh.employees.json;
 
 import com.google.gson.annotations.Expose;
 
