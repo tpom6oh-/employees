@@ -129,11 +129,17 @@ public class MainActivity extends ActionBarActivity implements
         searchDialogFragment.show(fm, SEARCH_DIALOG_FRAGMENT_TAG);
     }
 
+    /**
+     * Restarts loader with current {@link #filterHolder}
+     */
     public void onFilter() {
         getSupportLoaderManager().restartLoader(0, null, this);
     }
 
-
+    /**
+     * Creates loader for {@link com.tpom6oh.employees.model.employee
+     * .EmployeeColumns#CONTENT_URI} based on current {@link #filterHolder}
+     */
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String selection = null;

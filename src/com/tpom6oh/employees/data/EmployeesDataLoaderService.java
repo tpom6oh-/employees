@@ -59,6 +59,9 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         }
     }
 
+    /**
+     * @return an input stream from {@link #URL}
+     */
     public static InputStream getWebJsonStream() {
         try {
             URL url = new URL(URL);
@@ -108,6 +111,9 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         }
     }
 
+    /**
+     * @return an input stream from assets: {@link #BASE_ORGANIZATION_JSON_FILE_NAME}
+     */
     public static InputStream getDefaultJsonStream(Context context) {
         AssetManager manager = context.getAssets();
         InputStream in = null;
@@ -119,16 +125,25 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         return in;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onAllEmployeesDataParsed() {
         loadEmployeesDataToDb();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onParseDataStart() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onParseDataEnd() {
         getContentResolver().notifyChange(EmployeeColumns.CONTENT_URI, null);
@@ -139,6 +154,9 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onEmployeeInfoReceive(EmployeeInfo employeeInfo) {
         employeesBuffer.add(employeeInfo);
@@ -171,6 +189,9 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         employeesBuffer.clear();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCountryInfoReceive(CountryInfo country) {
         ContentValues contentValues = new EmployeeContentValues().
