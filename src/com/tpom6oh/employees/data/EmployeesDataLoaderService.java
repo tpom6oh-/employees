@@ -91,7 +91,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
     }
 
     private void saveNewETagToPreferences(String newETag) {
-        SharedPreferences preferences = getSharedPreferences(ETAG_VALUE_LABEL, MODE_PRIVATE);;
+        SharedPreferences preferences = getSharedPreferences(ETAG_VALUE_LABEL, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(ETAG_VALUE_LABEL, newETag);
         editor.commit();
@@ -102,13 +102,17 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         return preferences.getString(ETAG_VALUE_LABEL, "");
     }
 
-    private void parseInputStream(InputStream in) {
+    protected void parseInputStream(InputStream in) {
         EmployeesJsonParser parser = new EmployeesJsonParser(this);
         try {
             parser.parseEnterpriseCountryJson(in);
         } catch (IOException e) {
             Log.e(TAG, "Failed to parse " + BASE_ORGANIZATION_JSON_FILE_NAME);
         }
+    }
+
+    public boolean isParsingFromWeb() {
+        return parsingFromWeb;
     }
 
     /**
@@ -145,7 +149,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
      * {@inheritDoc}
      */
     @Override
-    public void onParseDataEnd() {
+    public void onParseDataComplete() {
         getContentResolver().notifyChange(EmployeeColumns.CONTENT_URI, null);
         if (parsingFromWeb) {
             saveNewETagToPreferences(currentETag);

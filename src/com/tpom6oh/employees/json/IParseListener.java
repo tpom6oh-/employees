@@ -15,7 +15,7 @@ public interface IParseListener {
     /**
      * Callback on data parse end at {@link com.tpom6oh.employees.json.EmployeesJsonParser}
      */
-    void onParseDataEnd();
+    void onParseDataComplete();
     /**
      * Callback on one employee's data parse at {@link com.tpom6oh.employees.json
      * .EmployeesJsonParser}

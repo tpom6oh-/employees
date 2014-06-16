@@ -179,7 +179,7 @@ public class EmployeesJsonParser {
         reader.close();
 
         if (parseListener !=null) {
-            parseListener.onParseDataEnd();
+            parseListener.onParseDataComplete();
         }
     }
 
