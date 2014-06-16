@@ -227,8 +227,8 @@ public class MainActivity extends ActionBarActivity implements
         }
 
         private void populateFields(FilterHolder filterHolder) {
-            minSalaryBar.setProgress(filterHolder.minSalary);
             maxSalaryBar.setProgress(filterHolder.maxSalary);
+            minSalaryBar.setProgress(filterHolder.minSalary);
             companyNameEditText.setText(filterHolder.companyName);
             employeeNameEditText.setText(filterHolder.employeeName);
         }
@@ -242,8 +242,10 @@ public class MainActivity extends ActionBarActivity implements
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if (seekBar.getId() == R.id.max_salary_bar) {
                         maxSalaryText.setText(getString(R.string.max_salary_text) + i + "$");
+                        manageMaxMoreThanMin();
                     } else if (seekBar.getId() == R.id.min_salary_bar) {
                         minSalaryText.setText(getString(R.string.min_salary_text) + i + "$");
+                        manageMinLessThanMax();
                     }
                 }
 
@@ -257,6 +259,18 @@ public class MainActivity extends ActionBarActivity implements
             minSalaryBar.setOnSeekBarChangeListener(listener);
         }
 
+        private void manageMinLessThanMax() {
+            if (minSalaryBar.getProgress() >= maxSalaryBar.getProgress()) {
+                minSalaryBar.setProgress(maxSalaryBar.getProgress());
+            }
+        }
+
+        private void manageMaxMoreThanMin() {
+            if (maxSalaryBar.getProgress() <= minSalaryBar.getProgress()) {
+                maxSalaryBar.setProgress(minSalaryBar.getProgress());
+            }
+        }
+
         private void setButtons() {
             View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
@@ -266,7 +280,7 @@ public class MainActivity extends ActionBarActivity implements
                             int minSalary = minSalaryBar.getProgress();
                             int maxSalary = maxSalaryBar.getProgress();
 
-                            if (minSalary >= maxSalary) {
+                            if (minSalary > maxSalary) {
                                 Toast.makeText(getActivity(),
                                                getActivity().getString(R.string.salary_error),
                                                Toast.LENGTH_SHORT).show();
