@@ -128,6 +128,11 @@ public class EmployeeSelection extends AbstractSelection<EmployeeSelection> {
         return this;
     }
 
+    public EmployeeSelection salaryBetween(int min, int max) {
+        addBetween(EmployeeColumns.SALARY, min, max);
+        return this;
+    }
+
     public EmployeeSelection company(String... value) {
         addEquals(EmployeeColumns.COMPANY, value);
         return this;

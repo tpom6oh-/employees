@@ -56,10 +56,9 @@ public class EmployeesProvider extends ContentProvider {
                 field.setAccessible(true);
                 field.set(null, true);
 
-                // Uncomment the following block if you also want logging of execution time (more verbose)
-                // field = sqliteDebugClass.getDeclaredField("DEBUG_SQL_TIME");
-                // field.setAccessible(true);
-                // field.set(null, true);
+                field = sqliteDebugClass.getDeclaredField("DEBUG_SQL_TIME");
+                field.setAccessible(true);
+                field.set(null, true);
             } catch (Throwable t) {
                 if (BuildConfig.DEBUG) Log.w(TAG, "Could not enable SQLiteDebug logging", t);
             }

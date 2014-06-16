@@ -1,11 +1,11 @@
 package com.tpom6oh.employees.model.base;
 
+import android.content.ContentResolver;
+import android.net.Uri;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import android.content.ContentResolver;
-import android.net.Uri;
 
 public abstract class AbstractSelection <T extends AbstractSelection<?>> {
     private static final String EQ = "=?";
@@ -24,6 +24,7 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
     private static final String LT_EQ = "<=?";
     private static final String NOT_EQ = "<>?";
     private static final String LIKE = " LIKE ?";
+    private static final String BETWEEN = " BETWEEN ? AND ?";
 
     private StringBuilder mSelection = new StringBuilder();
     private List<String> mSelectionArgs = new ArrayList<String>(5);
@@ -99,6 +100,13 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
             }
         }
         mSelection.append(PAREN_CLOSE);
+    }
+
+    protected void addBetween(String column, Object from, Object to) {
+        mSelection.append(column);
+        mSelection.append(BETWEEN);
+        mSelectionArgs.add(valueOf(from));
+        mSelectionArgs.add(valueOf(to));
     }
 
     protected void addGreaterThan(String column, Object value) {

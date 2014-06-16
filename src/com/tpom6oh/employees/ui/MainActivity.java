@@ -32,10 +32,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tpom6oh.employees.data.EmployeesDataLoaderService;
 import com.tpom6oh.employees.R;
+import com.tpom6oh.employees.data.EmployeesDataLoaderService;
 import com.tpom6oh.employees.model.EmployeesProvider;
 import com.tpom6oh.employees.model.employee.EmployeeColumns;
+import com.tpom6oh.employees.model.employee.EmployeeSelection;
 
 public class MainActivity extends ActionBarActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -142,41 +143,31 @@ public class MainActivity extends ActionBarActivity implements
      */
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        String selection = null;
-        String[] selectionArgs = null;
+        EmployeeSelection selection = new EmployeeSelection();
 
         if (!filterHolder.isEmpty()) {
             selection = generateSelection();
-            selectionArgs = generateSelectionArgs();
         }
 
         CursorLoader cursorLoader = new CursorLoader(this, EmployeeColumns.CONTENT_URI, PROJECTION,
-                                selection, selectionArgs, EmployeeColumns.COMPANY);
-        cursorLoader.rollbackContentChanged();
+                                selection.sel(), selection.args(), EmployeeColumns.COMPANY);
         return cursorLoader;
     }
 
-    private String generateSelection() {
-        return EmployeeColumns.COMPANY + " LIKE ? AND " + EmployeeColumns.NAME + " LIKE " +
-                    "? AND " + EmployeeColumns.DIVISION + " LIKE ? AND " +
-                    EmployeeColumns.EMPLOYMENT_YEAR + " LIKE ? AND " + EmployeeColumns.SALARY +
-                    " BETWEEN ? AND ?";
-    }
+    private EmployeeSelection generateSelection() {
+        EmployeeSelection employeeSelection = new EmployeeSelection()
+                .companyLike("%" + filterHolder.companyName + "%").and()
+                .nameLike("%" + filterHolder.employeeName + "%").and()
+                .salaryBetween(filterHolder.minSalary, filterHolder.maxSalary);
 
-    private String[] generateSelectionArgs() {
-        String[] selectionArgs;
-        String year = filterHolder.employmentYear.equals(SPINNER_DEFAULT_VALUE) ? "%" :
-                      filterHolder.employmentYear;
-        String division = filterHolder.division.equals(SPINNER_DEFAULT_VALUE) ? "%" :
-                          filterHolder.division;
+        if (!filterHolder.employmentYear.equals(SPINNER_DEFAULT_VALUE)) {
+            employeeSelection.and().employmentYear(Integer.parseInt(filterHolder.employmentYear));
+        }
+        if (!filterHolder.division.equals(SPINNER_DEFAULT_VALUE)) {
+            employeeSelection.and().division(filterHolder.division);
+        }
 
-        selectionArgs = new String[] {"%" + filterHolder.companyName + "%",
-                                      "%" + filterHolder.employeeName + "%",
-                                      division,
-                                      year,
-                                      String.valueOf(filterHolder.minSalary),
-                                      String.valueOf(filterHolder.maxSalary)};
-        return selectionArgs;
+        return employeeSelection;
     }
 
     @Override
