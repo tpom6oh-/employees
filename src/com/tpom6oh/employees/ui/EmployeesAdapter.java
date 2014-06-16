@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.tpom6oh.employees.R;
-import com.tpom6oh.employees.model.employee.EmployeeColumns;
+import com.tpom6oh.employees.model.employee.EmployeeCursor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,6 +21,7 @@ import java.util.Locale;
 
 public class EmployeesAdapter extends CursorAdapter {
 
+    public static final String COLON = ": ";
     private LayoutInflater layoutInflater;
     private ImageLoader imageLoader;
 
@@ -55,40 +56,31 @@ public class EmployeesAdapter extends CursorAdapter {
 
     private void bindBody(Context context, Cursor cursor, BodyViewHolder bodyViewHolder) {
         imageLoader.cancelDisplayTask(bodyViewHolder.employeeImage);
-        int nameIndex = cursor.getColumnIndex(EmployeeColumns.NAME);
-        bodyViewHolder.employeeName.setText(cursor.getString(nameIndex));
-        int divisionIndex = cursor.getColumnIndex(EmployeeColumns.DIVISION);
-        bodyViewHolder.employeeDivision.setText(context.getString(R.string.division_label) +
-                                                ": " + cursor.getString(divisionIndex));
-        int teamIndex = cursor.getColumnIndex(EmployeeColumns.TEAM);
-        bodyViewHolder.employeeTeam.setText(context.getString(R.string.team_label) + ": " +
-                                            cursor.getString(teamIndex));
-        int salaryIndex = cursor.getColumnIndex(EmployeeColumns.SALARY);
-        bodyViewHolder.employeeSalary.setText(context.getString(R.string.salary_label) +
-                                              ": " + cursor.getString(salaryIndex));
-        int dateIndex = cursor.getColumnIndex(EmployeeColumns.EMPLOYMENT_DATE);
+
+        EmployeeCursor employeeCursor = new EmployeeCursor(cursor);
+
+        bodyViewHolder.employeeName.setText(employeeCursor.getName());
+        bodyViewHolder.employeeDivision.setText(context.getString(R.string.division_label) + COLON + employeeCursor.getDivision());
+        bodyViewHolder.employeeTeam.setText(context.getString(R.string.team_label) + COLON + employeeCursor.getTeam());
+        bodyViewHolder.employeeSalary.setText(context.getString(R.string.salary_label) + COLON + employeeCursor.getSalary());
         bodyViewHolder.employmentDate.setText(context.getString(R.string.employment_date_label) +
-                                              ": " + parseDate(cursor.getString(dateIndex)));
-        int imageIndex = cursor.getColumnIndex(EmployeeColumns.IMAGE_URL);
-        String imageUrl = cursor.getString(imageIndex);
+                                              COLON + parseDate(employeeCursor.getEmploymentDate()));
+
+        String imageUrl = employeeCursor.getImageUrl();
         imageLoader.displayImage(imageUrl, new ImageViewAware(bodyViewHolder.employeeImage));
     }
 
     private void bindHeader(Cursor cursor, HeaderViewHolder headerViewHolder) {
-        int companyNameColumn = cursor.getColumnIndex(EmployeeColumns.COMPANY);
-        int countryNameColumn = cursor.getColumnIndex(EmployeeColumns.COUNTRY_NAME);
-        int enterpriseNameColumn = cursor.getColumnIndex(EmployeeColumns.ENTERPRISE);
-        String companyName = cursor.getString(companyNameColumn);
-        String countryName = cursor.getString(countryNameColumn);
-        String enterpriseName = cursor.getString(enterpriseNameColumn);
-        String headerString = companyName + " (" + countryName + ", " + enterpriseName + ")";
+        EmployeeCursor employeeCursor = new EmployeeCursor(cursor);
+        String headerString = employeeCursor.getCountryName() + " (" +
+                              employeeCursor.getCountryName() + ", " + "" +
+                              employeeCursor.getEnterprise() + ")";
         headerViewHolder.header.setText(headerString);
     }
 
-    private String parseDate(String string) {
-        DateFormat df = new SimpleDateFormat("dd/mm/yyyy",
-                                             Locale.ENGLISH);
-        return df.format(new Date(Long.parseLong(string)));
+    private String parseDate(Date date) {
+        DateFormat df = new SimpleDateFormat("dd/mm/yyyy", Locale.ENGLISH);
+        return df.format(date);
     }
 
     private HeaderViewHolder getHeaderViewHolder(View view) {
@@ -137,13 +129,12 @@ public class EmployeesAdapter extends CursorAdapter {
     }
 
     private int getViewType(Cursor cursor) {
-        String currentCompany = cursor.getString(cursor.getColumnIndex(EmployeeColumns.COMPANY));
-        String currentEnterprise = cursor.getString(cursor.getColumnIndex(EmployeeColumns
-                                                                                  .ENTERPRISE));
+        EmployeeCursor employeeCursor = new EmployeeCursor(cursor);
+        String currentCompany = employeeCursor.getCompany();
+        String currentEnterprise = employeeCursor.getEnterprise();
         if (cursor.moveToPrevious()) {
-            String prevCompany = cursor.getString(cursor.getColumnIndex(EmployeeColumns.COMPANY));
-            String prevEnterprise = cursor.getString(cursor.getColumnIndex(EmployeeColumns
-                                                                                      .ENTERPRISE));
+            String prevCompany = employeeCursor.getCompany();
+            String prevEnterprise = employeeCursor.getEnterprise();
             int type = !currentCompany.equals(prevCompany) || !currentEnterprise.equals(prevEnterprise)
                        ? 0 : 1;
             cursor.moveToNext();
