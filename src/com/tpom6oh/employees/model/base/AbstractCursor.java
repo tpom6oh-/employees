@@ -1,14 +1,14 @@
 package com.tpom6oh.employees.model.base;
 
-import java.util.Date;
-import java.util.HashMap;
-
 import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.provider.BaseColumns;
 
+import java.util.Date;
+import java.util.HashMap;
+
 public abstract class AbstractCursor extends CursorWrapper {
-	private HashMap<String, Integer> mColumnIndexes = new HashMap<String, Integer>();
+	protected HashMap<String, Integer> mColumnIndexes = new HashMap<String, Integer>();
 	
     public AbstractCursor(Cursor cursor) {
         super(cursor);

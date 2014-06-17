@@ -20,7 +20,7 @@ public class EmployeesApplication extends Application {
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                .threadPoolSize(1)
+                .threadPoolSize(3)
                 .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
                 .memoryCacheSize(2 * 1024 * 1024)
                 .defaultDisplayImageOptions(options)

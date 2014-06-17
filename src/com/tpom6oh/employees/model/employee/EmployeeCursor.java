@@ -1,17 +1,24 @@
 package com.tpom6oh.employees.model.employee;
 
-import java.util.Date;
-
 import android.database.Cursor;
 
 import com.tpom6oh.employees.model.base.AbstractCursor;
+
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Cursor wrapper for the {@code employee} table.
  */
 public class EmployeeCursor extends AbstractCursor {
+
     public EmployeeCursor(Cursor cursor) {
         super(cursor);
+    }
+
+    public EmployeeCursor(Cursor cursor, HashMap<String, Integer> columnIndexes) {
+        super(cursor);
+        mColumnIndexes = columnIndexes;
     }
 
     /**

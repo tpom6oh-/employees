@@ -11,12 +11,14 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+import com.tpom6oh.employees.LruCacheArray;
 import com.tpom6oh.employees.R;
 import com.tpom6oh.employees.model.employee.EmployeeCursor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class EmployeesAdapter extends CursorAdapter {
@@ -24,6 +26,8 @@ public class EmployeesAdapter extends CursorAdapter {
     public static final String COLON = ": ";
     private LayoutInflater layoutInflater;
     private ImageLoader imageLoader;
+    private HashMap<String, Integer> columnIndexesCache = new HashMap<String, Integer>();
+    private LruCacheArray lruCache = new LruCacheArray(100);
 
     public EmployeesAdapter(Context context, Cursor c, LayoutInflater layoutInflater) {
         super(context, c, 0);
@@ -57,7 +61,7 @@ public class EmployeesAdapter extends CursorAdapter {
     private void bindBody(Context context, Cursor cursor, BodyViewHolder bodyViewHolder) {
         imageLoader.cancelDisplayTask(bodyViewHolder.employeeImage);
 
-        EmployeeCursor employeeCursor = new EmployeeCursor(cursor);
+        EmployeeCursor employeeCursor = new EmployeeCursor(cursor, columnIndexesCache);
 
         bodyViewHolder.employeeName.setText(employeeCursor.getName());
         bodyViewHolder.employeeDivision.setText(context.getString(R.string.division_label) + COLON + employeeCursor.getDivision());
@@ -71,7 +75,7 @@ public class EmployeesAdapter extends CursorAdapter {
     }
 
     private void bindHeader(Cursor cursor, HeaderViewHolder headerViewHolder) {
-        EmployeeCursor employeeCursor = new EmployeeCursor(cursor);
+        EmployeeCursor employeeCursor = new EmployeeCursor(cursor, columnIndexesCache);
         String headerString = employeeCursor.getCompany() + " (" +
                               employeeCursor.getCountryName() + ", " + "" +
                               employeeCursor.getEnterprise() + ")";
@@ -129,20 +133,26 @@ public class EmployeesAdapter extends CursorAdapter {
     }
 
     private int getViewType(Cursor cursor) {
-        EmployeeCursor employeeCursor = new EmployeeCursor(cursor);
+        int position = cursor.getPosition();
+        int cached = lruCache.get(position, -1);
+        if (cached != -1) {
+            return cached;
+        }
+        EmployeeCursor employeeCursor = new EmployeeCursor(cursor, columnIndexesCache);
         String currentCompany = employeeCursor.getCompany();
         String currentEnterprise = employeeCursor.getEnterprise();
+        int type;
         if (cursor.moveToPrevious()) {
             String prevCompany = employeeCursor.getCompany();
             String prevEnterprise = employeeCursor.getEnterprise();
-            int type = !currentCompany.equals(prevCompany) || !currentEnterprise.equals(prevEnterprise)
+            type = !currentCompany.equals(prevCompany) || !currentEnterprise.equals(prevEnterprise)
                        ? 0 : 1;
-            cursor.moveToNext();
-            return type;
         } else {
-            cursor.moveToNext();
-            return 0;
+            type = 0;
         }
+        cursor.moveToNext();
+        lruCache.put(position, type);
+        return type;
     }
 
     @Override
