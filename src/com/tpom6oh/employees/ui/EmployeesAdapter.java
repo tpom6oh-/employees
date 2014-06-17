@@ -72,7 +72,7 @@ public class EmployeesAdapter extends CursorAdapter {
 
     private void bindHeader(Cursor cursor, HeaderViewHolder headerViewHolder) {
         EmployeeCursor employeeCursor = new EmployeeCursor(cursor);
-        String headerString = employeeCursor.getCountryName() + " (" +
+        String headerString = employeeCursor.getCompany() + " (" +
                               employeeCursor.getCountryName() + ", " + "" +
                               employeeCursor.getEnterprise() + ")";
         headerViewHolder.header.setText(headerString);
