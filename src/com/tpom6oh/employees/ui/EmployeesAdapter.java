@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
-import com.tpom6oh.employees.LruCacheArray;
+import com.tpom6oh.employees.util.LruCacheArray;
 import com.tpom6oh.employees.R;
 import com.tpom6oh.employees.model.employee.EmployeeCursor;
 
