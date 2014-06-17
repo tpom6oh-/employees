@@ -32,6 +32,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.tpom6oh.employees.R;
 import com.tpom6oh.employees.data.EmployeesDataLoaderService;
 import com.tpom6oh.employees.model.EmployeesProvider;
@@ -89,6 +91,10 @@ public class MainActivity extends ActionBarActivity implements
 
         cursorAdapter = new EmployeesAdapter(this, null, getLayoutInflater());
         employeesList.setAdapter(cursorAdapter);
+
+        PauseOnScrollListener listener = new PauseOnScrollListener(ImageLoader.getInstance(), false,
+                                                                   true);
+        employeesList.setOnScrollListener(listener);
     }
 
     private void initFilterHolder(Bundle savedInstanceState) {
