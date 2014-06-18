@@ -142,7 +142,12 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
      */
     @Override
     public void onParseDataStart() {
+        clearDatabase();
+    }
 
+    private void clearDatabase() {
+        Uri uri = EmployeesProvider.notify(EmployeeColumns.CONTENT_URI, false);
+        getContentResolver().delete(uri, null, null);
     }
 
     /**

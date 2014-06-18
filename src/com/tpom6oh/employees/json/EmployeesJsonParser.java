@@ -46,11 +46,11 @@ public class EmployeesJsonParser {
     }
 
     private void parseEnterpriseList(JsonReader reader) throws IOException {
-        parseListener.onParseDataStart();
         String enterpriseListName = reader.nextName();
         if (!enterpriseListName.equals("enterpriseList")) {
             throw new IllegalArgumentException("Invalid reader state");
         }
+        parseListener.onParseDataStart();
         reader.beginArray();
         currentEnterpriseInfo = new EnterpriseInfo();
 
