@@ -107,7 +107,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         try {
             parser.parseEnterpriseCountryJson(in);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to parse " + BASE_ORGANIZATION_JSON_FILE_NAME);
+            Log.e(TAG, "Failed to parse JSON");
         }
     }
 
