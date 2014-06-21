@@ -170,9 +170,9 @@ public class EmployeesJsonParser {
     private Employee parseEmployeeItem(JsonReader reader) throws IOException {
         try {
             return gson.fromJson(reader, Employee.class);
-        } catch (JsonIOException ex) {
-            Log.e(CLASS_TAG, "Gson was unable to read an input stream");
-            throw new IOException(ex.getMessage());
+        } catch (JsonIOException e) {
+            Log.e(CLASS_TAG, "Gson was unable to read an input stream", e);
+            throw new IOException(e.getMessage());
         }
     }
 
@@ -200,7 +200,7 @@ public class EmployeesJsonParser {
         try {
             employmentDate = df.parse(employee.getEmploymentDate());
         } catch (ParseException e) {
-            Log.e(CLASS_TAG, "Failed to parse employment date");
+            Log.e(CLASS_TAG, "Failed to parse employment date", e);
         }
         return employmentDate;
     }

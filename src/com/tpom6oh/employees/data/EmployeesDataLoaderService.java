@@ -67,9 +67,9 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
             URL url = new URL(URL);
             return url.openStream();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to get inputStream from " + URL);
+            Log.e(TAG, "Failed to get inputStream from " + URL, e);
         }
         return null;
     }
@@ -85,7 +85,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
                 return !currentETag.equals(previousETag);
             }
         } catch (IOException e) {
-            Log.e(TAG, "Failed to get ETag");
+            Log.e(TAG, "Failed to get ETag", e);
             return true;
         }
     }
@@ -107,7 +107,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         try {
             parser.parseEnterpriseCountryJson(in);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to parse JSON");
+            Log.e(TAG, "Failed to parse JSON", e);
         }
     }
 
@@ -124,7 +124,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         try {
             in = manager.open(BASE_ORGANIZATION_JSON_FILE_NAME);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to get inputStream from " + BASE_ORGANIZATION_JSON_FILE_NAME);
+            Log.e(TAG, "Failed to get inputStream from " + BASE_ORGANIZATION_JSON_FILE_NAME, e);
         }
         return in;
     }
