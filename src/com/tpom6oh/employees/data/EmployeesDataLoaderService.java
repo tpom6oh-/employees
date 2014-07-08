@@ -10,13 +10,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.tpom6oh.employees.json.CountryInfo;
+import com.tpom6oh.employees.json.EmployeesJsonParser;
+import com.tpom6oh.employees.json.IParseListener;
 import com.tpom6oh.employees.model.EmployeeInfo;
 import com.tpom6oh.employees.model.EmployeesProvider;
 import com.tpom6oh.employees.model.employee.EmployeeColumns;
 import com.tpom6oh.employees.model.employee.EmployeeContentValues;
-import com.tpom6oh.employees.json.CountryInfo;
-import com.tpom6oh.employees.json.EmployeesJsonParser;
-import com.tpom6oh.employees.json.IParseListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,9 +67,9 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
             URL url = new URL(URL);
             return url.openStream();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to get inputStream from " + URL);
+            Log.e(TAG, "Failed to get inputStream from " + URL, e);
         }
         return null;
     }
@@ -85,7 +85,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
                 return !currentETag.equals(previousETag);
             }
         } catch (IOException e) {
-            Log.e(TAG, "Failed to get ETag");
+            Log.e(TAG, "Failed to get ETag", e);
             return true;
         }
     }
@@ -124,7 +124,7 @@ public class EmployeesDataLoaderService extends IntentService implements IParseL
         try {
             in = manager.open(BASE_ORGANIZATION_JSON_FILE_NAME);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to get inputStream from " + BASE_ORGANIZATION_JSON_FILE_NAME);
+            Log.e(TAG, "Failed to get inputStream from " + BASE_ORGANIZATION_JSON_FILE_NAME, e);
         }
         return in;
     }
