@@ -2,6 +2,7 @@ package com.tpom6oh.employees.ui;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.util.LruCache;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,6 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
-import com.tpom6oh.employees.util.LruCacheArray;
 import com.tpom6oh.employees.R;
 import com.tpom6oh.employees.model.employee.EmployeeCursor;
 
@@ -27,7 +27,7 @@ public class EmployeesAdapter extends CursorAdapter {
     private LayoutInflater layoutInflater;
     private ImageLoader imageLoader;
     private HashMap<String, Integer> columnIndexesCache = new HashMap<String, Integer>();
-    private LruCacheArray lruCache = new LruCacheArray(100);
+    private LruCache<Integer, Integer> lruCache = new LruCache(100);
 
     public EmployeesAdapter(Context context, Cursor c, LayoutInflater layoutInflater) {
         super(context, c, 0);
@@ -134,7 +134,7 @@ public class EmployeesAdapter extends CursorAdapter {
 
     private int getViewType(Cursor cursor) {
         int position = cursor.getPosition();
-        int cached = lruCache.get(position, -1);
+        int cached = lruCache.get(position);
         if (cached != -1) {
             return cached;
         }
