@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.CursorAdapter;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class EmployeesAdapter extends CursorAdapter {
 
@@ -76,9 +78,10 @@ public class EmployeesAdapter extends CursorAdapter {
 
     private void bindHeader(Cursor cursor, HeaderViewHolder headerViewHolder) {
         EmployeeCursor employeeCursor = new EmployeeCursor(cursor, columnIndexesCache);
-        String headerString = employeeCursor.getCompany() + " (" +
-                              employeeCursor.getCountryName() + ", " + "" +
-                              employeeCursor.getEnterprise() + ")";
+        String country = employeeCursor.getCountryName();
+        country = (country != null) ? country + ", " : "";
+        String enterprise = employeeCursor.getEnterprise();
+        String headerString = employeeCursor.getCompany() + " (" + country  + enterprise + ")";
         headerViewHolder.header.setText(headerString);
     }
 

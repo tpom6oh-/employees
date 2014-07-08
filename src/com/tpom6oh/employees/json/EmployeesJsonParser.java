@@ -3,6 +3,7 @@ package com.tpom6oh.employees.json;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.stream.JsonReader;
 import com.tpom6oh.employees.model.EmployeeInfo;
 
@@ -46,11 +47,11 @@ public class EmployeesJsonParser {
     }
 
     private void parseEnterpriseList(JsonReader reader) throws IOException {
-        parseListener.onParseDataStart();
         String enterpriseListName = reader.nextName();
         if (!enterpriseListName.equals("enterpriseList")) {
             throw new IllegalArgumentException("Invalid reader state");
         }
+        parseListener.onParseDataStart();
         reader.beginArray();
         currentEnterpriseInfo = new EnterpriseInfo();
 
@@ -137,7 +138,7 @@ public class EmployeesJsonParser {
                 } else if (name.equals("teamResponsibleId")) {
                     currentTeamInfo.teamResponsibleId = reader.nextLong();
                 } else if (name.equals("employeeList")) {
-                    parseEmployee(reader);
+                    parseEmployees(reader);
                 }
             }
             reader.endObject();
@@ -145,10 +146,10 @@ public class EmployeesJsonParser {
         reader.endArray();
     }
 
-    private void parseEmployee(JsonReader reader) throws IOException {
+    private void parseEmployees(JsonReader reader) throws IOException {
         reader.beginArray();
         while (reader.hasNext()) {
-            Employee employee = gson.fromJson(reader, Employee.class);
+            Employee employee = parseEmployeeItem(reader);
             Date employmentDate = parseEmploymentDate(employee);
             EmployeeInfo employeeInfo = new EmployeeInfo(employee.getEmployeeName(),
                                                          currentDivisionInfo.divisionName,
@@ -164,6 +165,15 @@ public class EmployeesJsonParser {
             }
         }
         reader.endArray();
+    }
+
+    private Employee parseEmployeeItem(JsonReader reader) throws IOException {
+        try {
+            return gson.fromJson(reader, Employee.class);
+        } catch (JsonIOException e) {
+            Log.e(CLASS_TAG, "Gson was unable to read an input stream", e);
+            throw new IOException(e.getMessage());
+        }
     }
 
     private void parseCountries(JsonReader reader) throws IOException {
@@ -190,7 +200,7 @@ public class EmployeesJsonParser {
         try {
             employmentDate = df.parse(employee.getEmploymentDate());
         } catch (ParseException e) {
-            Log.e(CLASS_TAG, "Failed to parse employment date");
+            Log.e(CLASS_TAG, "Failed to parse employment date", e);
         }
         return employmentDate;
     }
